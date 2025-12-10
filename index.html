@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PE Hub - Complete</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --bg-light: #f8f9fa;
+            --bg-dark: #121212;
+            --surface-light: #ffffff;
+            --surface-dark: #1e1e1e;
+            --text-light: #212529;
+            --text-dark: #e0e0e0;
+            --house-red: #ef233c;
+            --house-blue: #4361ee;
+            --house-green: #2ec4b6;
+            --house-yellow: #ffb703;
+            --formal-gold: #ffd700;
+        }
+
+        * { box-sizing: border-box; tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background 0.3s, color 0.3s;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+        
+        body.dark-mode .form-control { background: var(--surface-dark); border-color: #444; }
+        body.dark-mode .stats-card { background: var(--surface-dark); }
+        body.dark-mode .sport-tile { background: var(--surface-dark); }
+        body.dark-mode .lesson-item { background: var(--surface-dark); }
+
+        .hidden { display: none !important; }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-outline { border: 2px solid var(--primary); background: transparent; color: var(--primary); }
+        .btn-danger { background: #ff4757; color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; border: none; }
+        
+        .app-container {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            padding-bottom: 80px; 
+        }
+
+        .header {
+            padding: 15px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        body.dark-mode .header { background: rgba(30,30,30,0.95); }
+
+        /* Auth Styles */
+        .auth-wrapper {
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+        }
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: 600; }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: var(--surface-light);
+            color: inherit;
+        }
+        .house-selector { display: flex; gap: 10px; margin-top: 10px; }
+        .house-btn {
+            flex: 1; height: 50px; border-radius: 12px; border: 3px solid transparent; opacity: 0.5; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .house-btn.selected { opacity: 1; border-color: white; transform: scale(1.08); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        
+        .profile-upload {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        .profile-upload img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-upload i { font-size: 3rem; color: #999; }
+
+        /* Dashboard Styles */
+        .stats-card {
+            background: var(--surface-light);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .progress-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill { height: 100%; transition: width 0.5s; }
+
+        .top-student-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(118, 75, 162, 0.4);
+        }
+
+        .badge-item {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Leaderboard Styles */
+        .house-section {
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        body.dark-mode .house-section { border-color: #333; }
+        .house-header {
+            padding: 12px 15px;
+            color: white;
+            font-weight: 700;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .leaderboard-row {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 12px 15px; 
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+        body.dark-mode .leaderboard-row { border-bottom-color: #333; }
+        .leaderboard-row:last-child { border-bottom: none; }
+        .rank-num { 
+            font-weight: bold; 
+            width: 30px; 
+            color: #888; 
+            font-size: 0.85rem; 
+        }
+        
+        /* Sports & Lessons */
+        .sports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
+            padding: 15px;
+        }
+        .sport-tile {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1;
+            transition: transform 0.1s;
+        }
+        .sport-tile:active { transform: scale(0.95); }
+        .sport-icon { font-size: 2.2rem; margin-bottom: 8px; color: var(--primary); }
+        .sport-name { font-size: 0.8rem; font-weight: 600; line-height: 1.2; }
+
+        .lesson-list { padding: 15px; }
+        .lesson-item {
+            background: var(--surface-light);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-left: 5px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            transition: transform 0.1s;
+        }
+        .lesson-item:active { transform: scale(0.98); }
+        .lesson-item.formal { 
+            border-left-color: var(--formal-gold); 
+            background: linear-gradient(to right, rgba(255,215,0,0.1), var(--surface-light));
+        }
+        .lesson-item.practice { border-left-color: var(--primary); }
+        .lesson-item.completed { opacity: 0.7; }
+        
+        .special-tile {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Assessment Matrix */
+        .matrix-container { padding: 10px; }
+        .skill-row { 
+            margin-bottom: 20px; 
+            background: rgba(67, 97, 238, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .skill-levels { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 8px; 
+            margin-top: 10px; 
+        }
+        
+        .level-btn {
+            padding: 10px 4px;
+            font-size: 0.7rem;
+            text-align: center;
+            background: rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        body.dark-mode .level-btn { background: rgba(255,255,255,0.05); }
+        .level-btn.active { 
+            background: var(--primary); 
+            color: white; 
+            transform: scale(1.05); 
+            border-color: var(--secondary);
+        }
+        .level-btn:hover { opacity: 0.8; }
+
+        /* Quiz Map - Vertical Scrolling Path */
+        .quiz-map-wrapper {
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .quiz-map {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        .map-node {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--surface-light);
+            border: 4px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        body.dark-mode .map-node { background: var(--surface-dark); }
+        .map-node.completed { 
+            border-color: var(--house-green); 
+            background: var(--house-green); 
+            color: white; 
+        }
+        .map-node.locked { 
+            filter: grayscale(1); 
+            opacity: 0.4; 
+            pointer-events: none; 
+            background: #ddd; 
+        }
+        .map-node:active { transform: scale(0.92); }
+        .map-node::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 15px;
+            background: #ddd;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .map-node:first-child::before { display: none; }
+
+        /* Quiz UI */
+        .study-box {
+            background: #e3f2fd; 
+            color: #0d47a1;
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 20px;
+            font-size: 0.85rem; 
+            line-height: 1.6; 
+            border-left: 4px solid #1976d2;
+            max-height: 300px; 
+            overflow-y: auto;
+        }
+        body.dark-mode .study-box {
+            background: rgba(33, 150, 243, 0.15);
+            color: #90caf9;
+        }
+        .quote-box {
+            font-style: italic; 
+            color: #555; 
+            font-size: 0.85rem; 
+            margin-bottom: 15px; 
+            text-align: center;
+            border-top: 1px solid #eee; 
+            border-bottom: 1px solid #eee; 
+            padding: 12px;
+        }
+        body.dark-mode .quote-box { color: #aaa; border-color: #444; }
+
+        /* Teacher Interface */
+        .teacher-table {
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.85rem;
+        }
+        .teacher-table th, .teacher-table td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #eee; 
+        }
+        body.dark-mode .teacher-table th,
+        body.dark-mode .teacher-table td { border-bottom-color: #333; }
+        .teacher-table th { background: var(--primary); color: white; font-weight: 600; }
+        .filter-bar { 
+            display: flex; 
+            gap: 10px; 
+            padding: 10px 15px; 
+            overflow-x: auto; 
+            background: var(--surface-light);
+            border-radius: 12px;
+            margin: 15px;
+        }
+        body.dark-mode .filter-bar { background: var(--surface-dark); }
+        .filter-bar select, .filter-bar input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 0.85rem;
+        }
+        body.dark-mode .filter-bar select,
+        body.dark-mode .filter-bar input { 
+            background: #2a2a2a; 
+            color: var(--text-dark);
+            border-color: #444;
+        }
+        .score-badge { 
+            background: var(--primary); 
+            color: white; 
+            padding: 4px 10px; 
+            border-radius: 12px; 
+            font-size: 0.75rem; 
+            font-weight: 600;
+        }
+
+        .skill-editor {
+            background: var(--surface-light);
+            padding: 20px;
+            margin: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        body.dark-mode .skill-editor { background: var(--surface-dark); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; 
+            bottom: 0; 
+            width: 100%;
+            background: var(--surface-light);
+            display: flex; 
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 999;
+        }
+        body.dark-mode .bottom-nav { background: #252525; }
+        .nav-item {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            font-size: 0.7rem; 
+            color: #888; 
+            text-decoration: none; 
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 1.5rem; margin-bottom: 2px; }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen" class="auth-wrapper">
+        <h2 style="text-align: center; color: var(--primary); margin-bottom: 10px;">🏃 PE Hub</h2>
+        <p style="text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 30px;">Complete Physical Education Platform</p>
+        
+        <div class="auth-tabs">
+            <button class="btn btn-primary" onclick="toggleAuth('student')" id="btn-auth-student">Student</button>
+            <button class="btn btn-outline" onclick="toggleAuth('teacher')" id="btn-auth-teacher">Teacher</button>
+        </div>
+
+        <!-- STUDENT FORM -->
+        <div id="student-form">
+            <div class="form-group">
+                <label>School</label>
+                <select class="form-control" id="s-school">
+                    <option>Crescendo HELP International</option>
+                    <option>Request to Add...</option>
+                </select>
+            </div>
+            
+            <div id="student-login-mode">
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" id="s-id-login" class="form-control" placeholder="STU-123">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="s-pass-login" class="form-control" placeholder="••••••">
+                </div>
+                <button class="btn btn-primary" onclick="loginStudent()">Login</button>
+                <p style="text-align:center; font-size:0.85rem; margin-top:15px; color:var(--primary); cursor:pointer;" onclick="toggleStudentRegister()">New Student? Register here</p>
+            </div>
+
+            <div id="student-register-mode" class="hidden">
+                <div class="profile-upload" onclick="document.getElementById('profile-pic-input').click()">
+                    <i class="material-icons-round">add_a_photo</i>
+                    <img id="profile-preview" style="display:none;">
+                </div>
+                <input type="file" id="profile-pic-input" accept="image/*" onchange="previewProfile(event)">
+                
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="s-name" class="form-control" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="s-email" class="form-control" placeholder="john@school.edu">
+                </div>
+                <div class="form-group">
+                    <label>Student ID *</label>
+                    <input type="text" id="s-id-reg" class="form-control" placeholder="STU-123">
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="s-pass-reg" class="form-control" placeholder="••••••">
+                </div>
+                <div class="form-group">
+                    <label>Class/Year *</label>
+                    <select id="s-year" class="form-control">
+                        <option value="1-C">Year 1-C (KS1)</option>
+                        <option value="1-H">Year 1-H (KS1)</option>
+                        <option value="2-C">Year 2-C (KS1)</option>
+                        <option value="3-C">Year 3-C (KS2)</option>
+                        <option value="4-C">Year 4-C (KS2)</option>
+                        <option value="5-C">Year 5-C (KS2+)</option>
+                        <option value="6-C">Year 6-C (KS2+)</option>
+                        <option value="6-Test">Year 6-Test (KS2+ Test Class)</option>
+                        <option value="7-C">Year 7-C (KS3)</option>
+                        <option value="8-C">Year 8-C (KS3)</option>
+                        <option value="9-C">Year 9-C (KS3)</option>
+                        <option value="10-C">Year 10-C (KS4)</option>
+                        <option value="10-Test">Year 10-Test (KS4 Test Class)</option>
+                        <option value="11-C">Year 11-C (KS4)</option>
+                        <option value="12-C">Year 12-C (KS5)</option>
+                        <option value="13-C">Year 13-C (KS5)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth *</label>
+                    <input type="date" id="s-dob" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>House Team *</label>
+                    <div class="house-selector">
+                        <div class="house-btn" style="background:var(--house-red)" onclick="selectHouse('Red', this)"></div>
+                        <div class="house-btn" style="background:var(--house-blue)" onclick="selectHouse('Blue', this)"></div>
+                        <div class="house-btn" style="background:var(--house-green)" onclick="selectHouse('Green', this)"></div>
+                        <div class="house-btn" style="background:var(--house-yellow)" onclick="selectHouse('Yellow', this)"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="registerStudent()">Complete Registration</button>
+                <p style="text-align:center; font-size:0.85rem; margin-top:15px; color:var(--primary); cursor:pointer;" onclick="toggleStudentRegister()">Already have an account? Login</p>
+            </div>
+        </div>
+
+        <!-- TEACHER FORM -->
+        <div id="teacher-form" class="hidden">
+            <div class="form-group">
+                <label>Title</label>
+                <select class="form-control" id="t-title">
+                    <option>Mr.</option>
+                    <option>Miss.</option>
+                    <option>Mrs.</option>
+                    <option>Dr.</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Teacher ID</label>
+                <input type="text" id="t-id" class="form-control" placeholder="TCH-001">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="t-email" class="form-control" placeholder="teacher@school.edu">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="t-pass" class="form-control" placeholder="••••••">
+            </div>
+            <button class="btn btn-primary" onclick="loginTeacher()">Teacher Access</button>
+        </div>
+    </div>
+
+    <!-- STUDENT APP -->
+    <div id="student-app" class="app-container hidden">
+        <header class="header">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div id="user-avatar" style="width:40px; height:40px; background:#ddd; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <i class="material-icons-round" style="font-size:22px; color:#555;">person</i>
+                    <img id="user-avatar-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+                </div>
+                <div>
+                    <div id="user-name" style="font-weight:600; font-size:0.95rem;">Student</div>
+                    <div id="user-class" style="font-size:0.7rem; opacity:0.7;">KS3 - Year 8-C</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <button onclick="openProfileEdit()" style="background:none; border:none; cursor:pointer; color:inherit;" title="Edit Profile">
+                    <i class="material-icons-round">edit</i>
+                </button>
+                <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; color:inherit;" title="Toggle Theme">
+                    <i class="material-icons-round">dark_mode</i>
+                </button>
+                <button onclick="logout()" style="background:none; border:none; cursor:pointer; color:inherit;" title="Logout">
+                    <i class="material-icons-round" style="color: #ff4757;">logout</i>
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="view-section">
+            <div class="top-student-card">
+                <div>
+                    <div style="font-size:0.85rem; opacity:0.9;">🏆 Overall Leader</div>
+                    <div id="top-student-name" style="font-size:1.3rem; font-weight:800; margin-top:5px;">Loading...</div>
+                    <div id="top-student-class" style="font-size:0.8rem; font-weight:600; color:rgba(255,255,255,0.85); margin-top:3px;">Class</div>
+                    <div id="top-student-house" style="font-size:0.85rem; margin-top:2px;">House</div>
+                </div>
+                <div style="text-align:right;">
+                    <div id="top-student-points" style="font-size:1.8rem; font-weight:800;">0</div>
+                    <div style="font-size:0.75rem; opacity:0.9;">Points</div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h3 style="margin-top:0;">My Progress</h3>
+                <div style="display:flex; justify-content:space-between; margin-top:15px;">
+                    <span id="house-name-display" style="font-weight:700; color:var(--house-blue);">Blue House</span>
+                    <span id="total-points" style="font-weight:700;">0 pts</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill-bar" style="width: 0%; background: var(--house-blue);"></div>
+                </div>
+                <div style="margin-top:12px; font-size:0.85rem; display:flex; justify-content:space-between;">
+                    <span>Overall Rank: <b id="user-rank-display">--</b></span>
+                    <span>Quiz XP: <b id="user-quiz-xp">0</b></span>
+                </div>
+                <p style="font-size:0.75rem; color:#888; margin-top:8px;">💡 5 quizzes = 1 House Point</p>
+            </div>
+            
+            <div class="stats-card">
+                <h3 style="margin-top:0;">🎖️ My Achievements</h3>
+                <div id="badges-container"></div>
+            </div>
+            
+            <div class="stats-card">
+                <h3 style="margin-top:0;">🏆 House Leaderboards</h3>
+                <p style="font-size:0.8rem; color:#666; margin-bottom:15px;">Top 10 Students per House</p>
+                <div id="house-leaderboard-container"></div>
+            </div>
+        </div>
+
+        <!-- SPORTS VIEW -->
+        <div id="view-sports" class="view-section hidden">
+            <h3 style="padding: 15px 15px 0;">Sports Modules</h3>
+            <div class="sports-grid" id="sports-container"></div>
+        </div>
+
+        <!-- LESSONS VIEW -->
+        <div id="view-lessons" class="view-section hidden">
+            <div style="padding:15px; display:flex; align-items:center; gap:10px;">
+                <i class="material-icons-round" onclick="navTo('sports')" style="cursor:pointer;">arrow_back</i>
+                <h3 id="current-sport-title" style="margin:0;">Basketball</h3>
+            </div>
+            <div class="lesson-list" id="lesson-list-container"></div>
+        </div>
+
+        <!-- ASSESSMENT VIEW -->
+        <div id="view-assessment" class="view-section hidden">
+            <div style="padding:15px;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                    <i class="material-icons-round" onclick="navTo('lessons')" style="cursor:pointer;">arrow_back</i>
+                    <div>
+                        <h3 id="assess-title" style="margin:0;">Lesson Assessment</h3>
+                        <p id="assess-subtitle" style="font-size:0.8rem; color:#666; margin:5px 0 0;">Complete your self-assessment</p>
+                    </div>
+                </div>
+                
+                <!-- Practice Lesson Input -->
+                <div id="practice-inputs" class="hidden">
+                    <div class="stats-card">
+                        <div class="form-group">
+                            <label>📝 Topic (Goal)</label>
+                            <input id="practice-topic" class="form-control" type="text" placeholder="e.g., Shooting Accuracy">
+                        </div>
+                        <div class="form-group">
+                            <label>🎯 Skill Practiced</label>
+                            <input id="practice-skill" class="form-control" type="text" placeholder="e.g., Layups">
+                        </div>
+                        <div class="form-group">
+                            <label>✅ 3 Criteria for Success</label>
+                            <input id="criteria-1" class="form-control" type="text" placeholder="1. e.g., Eye on target" style="margin-bottom:8px;">
+                            <input id="criteria-2" class="form-control" type="text" placeholder="2. e.g., Follow through" style="margin-bottom:8px;">
+                            <input id="criteria-3" class="form-control" type="text" placeholder="3. e.g., Balance">
+                        </div>
+                        <div class="form-group">
+                            <label>🔥 Warm-up Level</label>
+                            <div class="skill-levels" id="warmup-selector">
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'warmup', 1)">1<br>Novice</div>
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'warmup', 2)">2<br>Explorer</div>
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'warmup', 3)">3<br>Performer</div>
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'warmup', 4)">4<br>Champion</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>🎽 Referee Level</label>
+                            <div class="skill-levels" id="referee-selector">
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'referee', 1)">1<br>Novice</div>
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'referee', 2)">2<br>Explorer</div>
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'referee', 3)">3<br>Performer</div>
+                                <div class="level-btn" onclick="selectSingleLevel(this, 'referee', 4)">4<br>Champion</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:15px;" onclick="savePracticeLesson()">Save Practice Session</button>
+                    </div>
+                </div>
+
+                <!-- Formal Assessment Matrix -->
+                <div id="formal-matrix" class="hidden">
+                    <div class="stats-card" style="background:linear-gradient(to bottom, rgba(255,215,0,0.1), var(--surface-light)); border:2px solid var(--formal-gold);">
+                        <h4 style="color:var(--formal-gold); margin-top:0;">⭐ Formal Assessment</h4>
+                        <p style="font-size:0.85rem; color:#666; margin-bottom:20px;">Tap the level you achieved for each skill</p>
+                        
+                        <div id="previous-assessment-view" class="hidden" style="background:rgba(67,97,238,0.05); padding:15px; border-radius:8px; margin-bottom:20px;">
+                            <h5 style="margin-top:0; color:var(--primary);">📊 Previous Assessment</h5>
+                            <div id="previous-assessment-content"></div>
+                        </div>
+                        
+                        <div id="matrix-container" class="matrix-container"></div>
+                        <button class="btn btn-primary" style="margin-top:20px;" onclick="saveFormalAssessment()">Submit Self-Assessment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ MODULE -->
+        <div id="view-quiz" class="view-section hidden">
+            <div style="text-align:center; padding:15px; background:var(--surface-light); position:sticky; top:60px; z-index:90; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
+                    <div>
+                        <span style="font-size:0.8rem; color:#666;">Quiz XP</span>
+                        <div style="font-size:1.5rem; font-weight:700; color:var(--primary);" id="quiz-points-display">0</div>
+                    </div>
+                    <div>
+                        <span style="font-size:0.8rem; color:#666;">Completed</span>
+                        <div style="font-size:1.5rem; font-weight:700; color:var(--house-green);" id="quiz-completed-display">0/100</div>
+                    </div>
+                </div>
+                <p style="font-size:0.75rem; color:#888; margin-top:8px;">💡 5 quizzes = 1 House Point</p>
+            </div>
+            
+            <details class="stats-card" style="cursor:pointer; margin:15px;">
+                <summary style="font-weight:600; color:var(--primary); padding:10px;">🏆 Top Quiz Students</summary>
+                <div id="quiz-leaderboard-list" style="margin-top:15px;"></div>
+            </details>
+
+            <div class="quiz-map-wrapper">
+                <div class="quiz-map" id="quiz-map-container"></div>
+            </div>
+        </div>
+        
+        <!-- QUIZ RUNNER -->
+        <div id="view-quiz-runner" class="view-section hidden" style="padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <i class="material-icons-round" onclick="exitQuiz()" style="cursor:pointer;">close</i>
+                <span style="font-weight:700; font-size:0.95rem;">Question <span id="q-number">1</span>/10</span>
+                <span style="font-weight:700; color:var(--house-green);">Score: <span id="q-score">0</span></span>
+            </div>
+            
+            <button class="btn btn-outline" style="width:100%; margin-bottom:20px;" onclick="toggleStudy()">
+                📖 Read Study Material
+            </button>
+            <div id="study-material" class="study-box hidden"></div>
+
+            <div class="stats-card">
+                <div style="background:var(--primary); color:white; padding:10px; border-radius:8px; margin-bottom:15px;">
+                    <small style="font-weight:600;">Topic: <span id="q-topic">Loading...</span></small>
+                </div>
+                <div class="quote-box" id="q-quote">"Quote of wisdom..."</div>
+                <h4 id="q-text" style="min-height:60px; line-height:1.5;">Question loading...</h4>
+                <div id="q-options" style="display:flex; flex-direction:column; gap:12px; margin-top:20px;"></div>
+                <div id="q-feedback" class="hidden" style="margin-top:20px; padding:15px; border-radius:10px;">
+                    <div id="feedback-text" style="margin-bottom:15px;"></div>
+                    <button class="btn btn-primary" onclick="nextQuestion()">Next Question →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROFILE EDIT MODAL -->
+        <div id="profile-edit-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;">
+            <div class="stats-card" style="max-width:500px; width:100%; max-height:90vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="margin:0;">Edit Profile</h3>
+                    <i class="material-icons-round" onclick="closeProfileEdit()" style="cursor:pointer;">close</i>
+                </div>
+                
+                <div class="profile-upload" onclick="document.getElementById('edit-profile-pic-input').click()">
+                    <i class="material-icons-round" id="edit-avatar-icon">add_a_photo</i>
+                    <img id="edit-profile-preview" style="display:none;">
+                </div>
+                <input type="file" id="edit-profile-pic-input" accept="image/*" onchange="previewEditProfile(event)">
+                
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="edit-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="edit-email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="edit-dob" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>House Team</label>
+                    <div class="house-selector">
+                        <div class="house-btn" id="edit-house-red" style="background:var(--house-red)" onclick="selectEditHouse('Red', this)"></div>
+                        <div class="house-btn" id="edit-house-blue" style="background:var(--house-blue)" onclick="selectEditHouse('Blue', this)"></div>
+                        <div class="house-btn" id="edit-house-green" style="background:var(--house-green)" onclick="selectEditHouse('Green', this)"></div>
+                        <div class="house-btn" id="edit-house-yellow" style="background:var(--house-yellow)" onclick="selectEditHouse('Yellow', this)"></div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveProfileEdit()">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="navTo('dashboard')">
+                <i class="material-icons-round">dashboard</i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="navTo('sports')">
+                <i class="material-icons-round">sports_basketball</i>
+                <span>Sports</span>
+            </div>
+            <div class="nav-item" onclick="navTo('quiz')">
+                <i class="material-icons-round">psychology</i>
+                <span>Quiz</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- TEACHER APP -->
+    <div id="teacher-app" class="app-container hidden">
+        <header class="header" style="background: linear-gradient(135deg, #2c3e50, #34495e); color:white; box-shadow:0 2px 15px rgba(0,0,0,0.2);">
+            <div style="font-weight:700; font-size:1.1rem;">👨‍🏫 Teacher Hub</div>
+            <button onclick="logout()" class="btn-danger">Logout</button>
+        </header>
+        
+        <div style="padding:0;">
+            <!-- Teacher Navigation -->
+            <div style="display:flex; background:var(--surface-light); border-bottom:2px solid #eee;">
+                <div class="teacher-tab active" onclick="switchTeacherTab('overview')" id="tab-overview" style="flex:1; padding:15px; text-align:center; cursor:pointer; font-weight:600; border-bottom:3px solid var(--primary);">Overview</div>
+                <div class="teacher-tab" onclick="switchTeacherTab('skills')" id="tab-skills" style="flex:1; padding:15px; text-align:center; cursor:pointer; font-weight:600; border-bottom:3px solid transparent;">5 Skills Editor</div>
+            </div>
+            
+            <!-- OVERVIEW TAB -->
+            <div id="teacher-overview" class="teacher-section">
+                <div class="filter-bar">
+                    <select id="t-filter-year" onchange="filterTeacherList()">
+                        <option value="all">All Years</option>
+                        <option value="1">Year 1</option>
+                        <option value="6">Year 6</option>
+                        <option value="6-Test">Year 6-Test</option>
+                        <option value="7">Year 7</option>
+                        <option value="8">Year 8</option>
+                        <option value="10">Year 10</option>
+                        <option value="10-Test">Year 10-Test</option>
+                    </select>
+                    <select id="t-filter-house" onchange="filterTeacherList()">
+                        <option value="all">All Houses</option>
+                        <option value="Red">Red</option>
+                        <option value="Blue">Blue</option>
+                        <option value="Green">Green</option>
+                        <option value="Yellow">Yellow</option>
+                    </select>
+                    <select id="t-filter-gender" onchange="filterTeacherList()">
+                        <option value="all">All Genders</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                    <input type="text" id="t-search" placeholder="Search student..." onkeyup="filterTeacherList()" style="flex:1; min-width:150px;">
+                </div>
+
+                <div class="stats-card" style="overflow-x:auto; padding:0;">
+                    <table class="teacher-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>ID</th>
+                                <th>Class</th>
+                                <th>House</th>
+                                <th>Points</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-student-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- SKILLS EDITOR TAB -->
+            <div id="teacher-skills" class="teacher-section hidden">
+                <div class="skill-editor">
+                    <h3 style="margin-top:0;">Define 5 Skills per Key Stage & Sport</h3>
+                    <p style="font-size:0.85rem; color:#666; margin-bottom:20px;">These skills will auto-populate in student assessments</p>
+                    
+                    <div class="form-group">
+                        <label>Key Stage</label>
+                        <select id="skill-ks" class="form-control" onchange="loadSkillEditor()">
+                            <option value="KS1">KS1 (Years 1-2)</option>
+                            <option value="KS2">KS2 (Years 3-4)</option>
+                            <option value="KS2+">KS2+ (Years 5-6)</option>
+                            <option value="KS3">KS3 (Years 7-9)</option>
+                            <option value="KS4">KS4 (Years 10-11)</option>
+                            <option value="KS5">KS5 (Years 12-13)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sport</label>
+                        <select id="skill-sport" class="form-control" onchange="loadSkillEditor()"></select>
+                    </div>
+                    
+                    <div id="skill-editor-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === CONSTANTS ===
+        const SPORTS_LIST = ["Basketball", "Football", "Handball", "Rugby", "Ultimate Frisbee", "Hockey", "Baseball", "Netball", "Swimming Distance", "Swimming Speed", "Orienteering", "Athletics", "Running Distance", "Gym", "Bodyweight Training", "Contemporary Dance", "Gymnastics", "Table Tennis", "Badminton", "Boxing", "Judo"];
+        
+        const SPORT_ICONS = {
+            "Basketball": "sports_basketball",
+            "Football": "sports_soccer",
+            "Handball": "sports_handball",
+            "Rugby": "sports_rugby",
+            "Ultimate Frisbee": "adjust",
+            "Hockey": "sports_hockey",
+            "Baseball": "sports_baseball",
+            "Netball": "sports_volleyball",
+            "Swimming Distance": "pool",
+            "Swimming Speed": "timer",
+            "Orienteering": "explore",
+            "Athletics": "sports_score",
+            "Running Distance": "directions_run",
+            "Gym": "fitness_center",
+            "Bodyweight Training": "accessibility_new",
+            "Contemporary Dance": "queue_music",
+            "Gymnastics": "accessibility",
+            "Table Tennis": "sports_tennis",
+            "Badminton": "sports_tennis",
+            "Boxing": "sports_mma",
+            "Judo": "self_improvement"
+        };
+        
+        const HOUSE_COLORS = {
+            'Red': 'var(--house-red)',
+            'Blue': 'var(--house-blue)',
+            'Green': 'var(--house-green)',
+            'Yellow': 'var(--house-yellow)'
+        };
+
+        // Quiz Topics - 10 Core Categories with 10 levels each
+        const QUIZ_CATEGORIES = [
+            "Foundations of Health", "Strong Body", "Strong Mind", "Fuel & Nutrition",
+            "Teamwork Counts", "Values in Sport", "Olympic Journey", "Know Your Body",
+            "Safe Moves", "Fair Play First"
+        ];
+        
+        // === STATE VARIABLES ===
+        let currentUser = null;
+        let selectedHouseTemp = '';
+        let profilePicBase64 = '';
+        let currentSport = null;
+        let currentLesson = null;
+        let practiceData = { warmup: 0, referee: 0 };
+        let quizState = {
+            active: false,
+            level: 0,
+            score: 0,
+            questionIndex: 0,
+            questions: [],
+            answered: false
+        };
+        
+        // === STORAGE HELPERS ===
+        async function saveUserData(user) {
+            try {
+                await window.storage.set(`user:${user.id}`, JSON.stringify(user));
+                return true;
+            } catch (e) {
+                console.error('Save error:', e);
+                return false;
+            }
+        }
+        
+        async function getUserData(id) {
+            try {
+                const result = await window.storage.get(`user:${id}`);
+                return result ? JSON.parse(result.value) : null;
+            } catch (e) {
+                console.error('Load error:', e);
+                return null;
+            }
+        }
+        
+        async function getAllUsers() {
+            try {
+                const keys = await window.storage.list('user:');
+                if (!keys || !keys.keys) return [];
+                
+                const users = [];
+                for (let key of keys.keys) {
+                    try {
+                        const result = await window.storage.get(key);
+                        if (result) users.push(JSON.parse(result.value));
+                    } catch (e) {
+                        console.error('Error loading user:', e);
+                    }
+                }
+                return users;
+            } catch (e) {
+                console.error('Error getting all users:', e);
+                return [];
+            }
+        }
+        
+        async function saveSkillDefinition(ks, sport, skills) {
+            try {
+                const key = `skills:${ks}:${sport}`;
+                await window.storage.set(key, JSON.stringify(skills));
+                return true;
+            } catch (e) {
+                console.error('Save skills error:', e);
+                return false;
+            }
+        }
+        
+        async function getSkillDefinition(ks, sport) {
+            try {
+                const key = `skills:${ks}:${sport}`;
+                const result = await window.storage.get(key);
+                return result ? JSON.parse(result.value) : getDefaultSkills();
+            } catch (e) {
+                return getDefaultSkills();
+            }
+        }
+        
+        function getDefaultSkills() {
+            return [
+                { id: 1, category: 'Motor', name: 'Technique A', levels: ['Basic execution', 'Good form', 'Consistent technique', 'Advanced mastery'] },
+                { id: 2, category: 'Motor', name: 'Technique B', levels: ['Learning movement', 'Controlled execution', 'Fluid movement', 'Expert control'] },
+                { id: 3, category: 'Motor', name: 'Technique C', levels: ['Attempting skill', 'Partial success', 'Consistent success', 'Perfect execution'] },
+                { id: 4, category: 'Method', name: 'Warm-up', levels: ['Basic stretches', 'Proper routine', 'Comprehensive prep', 'Optimized warm-up'] },
+                { id: 5, category: 'Social', name: 'Refereeing', levels: ['Know basic rules', 'Fair decisions', 'Confident calls', 'Expert officiating'] }
+            ];
+        }
+        
+        // === AUTH FUNCTIONS ===
+        function toggleAuth(type) {
+            document.getElementById('btn-auth-student').className = type === 'student' ? 'btn btn-primary' : 'btn btn-outline';
+            document.getElementById('btn-auth-teacher').className = type === 'teacher' ? 'btn btn-primary' : 'btn btn-outline';
+            document.getElementById('student-form').classList.toggle('hidden', type !== 'student');
+            document.getElementById('teacher-form').classList.toggle('hidden', type !== 'teacher');
+        }
+        
+        function toggleStudentRegister() {
+            document.getElementById('student-login-mode').classList.toggle('hidden');
+            document.getElementById('student-register-mode').classList.toggle('hidden');
+        }
+        
+        function selectHouse(house, btn) {
+            selectedHouseTemp = house;
+            document.querySelectorAll('.house-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+        
+        function previewProfile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePicBase64 = e.target.result;
+                    const preview = document.getElementById('profile-preview');
+                    preview.src = profilePicBase64;
+                    preview.style.display = 'block';
+                    document.querySelector('.profile-upload i').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        async function registerStudent() {
+            const name = document.getElementById('s-name').value.trim();
+            const email = document.getElementById('s-email').value.trim();
+            const id = document.getElementById('s-id-reg').value.trim();
+            const pass = document.getElementById('s-pass-reg').value;
+            const year = document.getElementById('s-year').value;
+            const dob = document.getElementById('s-dob').value;
+            const house = selectedHouseTemp;
+            
+            if (!name || !email || !id || !pass || !house || !dob) {
+                alert('Please fill all required fields and select a house');
+                return;
+            }
+            
+            // Check if user exists
+            const existing = await getUserData(id);
+            if (existing) {
+                alert('Student ID already exists');
+                return;
+            }
+            
+            const ks = getKeyStage(year.split('-')[0]);
+            const newUser = {
+                role: 'student',
+                id, name, email, password: pass,
+                year, ks, house, dob,
+                profilePic: profilePicBase64,
+                points: 0,
+                quizXP: 0,
+                gender: 'male', // Could add gender selection
+                progress: {
+                    sports: {},
+                    completedQuizzes: [],
+                    badges: []
+                }
+            };
+            
+            const saved = await saveUserData(newUser);
+            if (saved) {
+                alert('Registration successful! Please login.');
+                toggleStudentRegister();
+                document.getElementById('s-id-login').value = id;
+            } else {
+                alert('Registration failed. Please try again.');
+            }
+        }
+        
+        async function loginStudent() {
+            const id = document.getElementById('s-id-login').value.trim();
+            const pass = document.getElementById('s-pass-login').value;
+            
+            if (!id || !pass) {
+                alert('Please enter ID and password');
+                return;
+            }
+            
+            const user = await getUserData(id);
+            if (!user || user.password !== pass) {
+                alert('Invalid credentials');
+                return;
+            }
+            
+            currentUser = user;
+            ensureUserStructure(currentUser);
+            await loadStudentApp();
+        }
+        
+        async function loginTeacher() {
+            const id = document.getElementById('t-id').value.trim();
+            const pass = document.getElementById('t-pass').value;
+            
+            if (!id || !pass) {
+                alert('Please enter all fields');
+                return;
+            }
+            
+            // Simple teacher auth (in production, use proper authentication)
+            if (pass.length < 4) {
+                alert('Invalid credentials');
+                return;
+            }
+            
+            currentUser = { role: 'teacher', id, name: document.getElementById('t-title').value + ' Teacher' };
+            await loadTeacherApp();
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('student-app').classList.add('hidden');
+                document.getElementById('teacher-app').classList.add('hidden');
+            }
+        }
+        
+        function getKeyStage(year) {
+            const y = parseInt(year);
+            if (y <= 2) return 'KS1';
+            if (y <= 4) return 'KS2';
+            if (y <= 6) return 'KS2+';
+            if (y <= 9) return 'KS3';
+            if (y <= 11) return 'KS4';
+            return 'KS5';
+        }
+        
+        function ensureUserStructure(user) {
+            if (!user.progress) user.progress = {};
+            if (!user.progress.sports) user.progress.sports = {};
+            if (!user.progress.completedQuizzes) user.progress.completedQuizzes = [];
+            if (!user.progress.badges) user.progress.badges = [];
+            if (user.quizXP === undefined) user.quizXP = 0;
+        }
+        
+        // === PROFILE EDIT ===
+        let editHouseTemp = '';
+        let editProfilePicBase64 = '';
+        
+        function openProfileEdit() {
+            editHouseTemp = currentUser.house;
+            editProfilePicBase64 = currentUser.profilePic || '';
+            
+            document.getElementById('edit-name').value = currentUser.name;
+            document.getElementById('edit-email').value = currentUser.email;
+            document.getElementById('edit-dob').value = currentUser.dob || '';
+            
+            // Set profile picture
+            if (currentUser.profilePic) {
+                document.getElementById('edit-profile-preview').src = currentUser.profilePic;
+                document.getElementById('edit-profile-preview').style.display = 'block';
+                document.getElementById('edit-avatar-icon').style.display = 'none';
+            } else {
+                document.getElementById('edit-profile-preview').style.display = 'none';
+                document.getElementById('edit-avatar-icon').style.display = 'block';
+            }
+            
+            // Set house selection
+            document.querySelectorAll('#profile-edit-modal .house-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById(`edit-house-${currentUser.house.toLowerCase()}`).classList.add('selected');
+            
+            document.getElementById('profile-edit-modal').classList.remove('hidden');
+        }
+        
+        function closeProfileEdit() {
+            document.getElementById('profile-edit-modal').classList.add('hidden');
+        }
+        
+        function selectEditHouse(house, btn) {
+            editHouseTemp = house;
+            document.querySelectorAll('#profile-edit-modal .house-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+        
+        function previewEditProfile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    editProfilePicBase64 = e.target.result;
+                    const preview = document.getElementById('edit-profile-preview');
+                    preview.src = editProfilePicBase64;
+                    preview.style.display = 'block';
+                    document.getElementById('edit-avatar-icon').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        async function saveProfileEdit() {
+            const name = document.getElementById('edit-name').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const dob = document.getElementById('edit-dob').value;
+            
+            if (!name || !email || !editHouseTemp) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            currentUser.name = name;
+            currentUser.email = email;
+            currentUser.dob = dob;
+            currentUser.house = editHouseTemp;
+            if (editProfilePicBase64) {
+                currentUser.profilePic = editProfilePicBase64;
+            }
+            
+            const saved = await saveUserData(currentUser);
+            if (saved) {
+                alert('Profile updated successfully!');
+                closeProfileEdit();
+                await loadStudentApp(); // Refresh display
+            } else {
+                alert('Error saving profile. Please try again.');
+            }
+        }
+        
+        // === STUDENT APP ===
+        async function loadStudentApp() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('student-app').classList.remove('hidden');
+            
+            // Set user info
+            document.getElementById('user-name').innerText = currentUser.name;
+            document.getElementById('user-class').innerText = `${currentUser.ks} - ${currentUser.year}`;
+            
+            if (currentUser.profilePic) {
+                document.getElementById('user-avatar-img').src = currentUser.profilePic;
+                document.getElementById('user-avatar-img').style.display = 'block';
+                document.querySelector('#user-avatar i').style.display = 'none';
+            }
+            
+            // Set house colors
+            document.getElementById('house-name-display').innerText = `${currentUser.house} House`;
+            document.getElementById('house-name-display').style.color = HOUSE_COLORS[currentUser.house];
+            document.getElementById('progress-fill-bar').style.background = HOUSE_COLORS[currentUser.house];
+            
+            // Update points
+            document.getElementById('total-points').innerText = `${currentUser.points} pts`;
+            document.getElementById('user-quiz-xp').innerText = currentUser.quizXP;
+            
+            // Render all sections
+            await renderLeaderboard();
+            renderBadges();
+            renderSports();
+            await renderQuizMap();
+        }
+        
+        async function renderLeaderboard() {
+            const allUsers = await getAllUsers();
+            const students = allUsers.filter(u => u.role === 'student');
+            
+            // Find top student
+            const topStudent = students.reduce((max, s) => s.points > max.points ? s : max, { points: 0, name: 'None', house: 'Blue', year: '?' });
+            document.getElementById('top-student-name').innerText = topStudent.name;
+            document.getElementById('top-student-points').innerText = topStudent.points;
+            document.getElementById('top-student-house').innerText = topStudent.house + ' House';
+            document.getElementById('top-student-class').innerText = topStudent.year;
+            
+            // House leaderboards
+            const houses = { Red: [], Blue: [], Green: [], Yellow: [] };
+            students.forEach(s => {
+                if (houses[s.house]) houses[s.house].push(s);
+            });
+            
+            const container = document.getElementById('house-leaderboard-container');
+            container.innerHTML = '';
+            
+            ['Red', 'Blue', 'Green', 'Yellow'].forEach(houseName => {
+                const houseStudents = houses[houseName].sort((a,b) => b.points - a.points).slice(0, 10);
+                const total = houses[houseName].reduce((sum, s) => sum + s.points, 0);
+                
+                let html = `
+                    <div class="house-section">
+                        <div class="house-header" style="background:${HOUSE_COLORS[houseName]}">
+                            <span>${houseName} House</span>
+                            <span style="background:rgba(255,255,255,0.25); padding:4px 10px; border-radius:12px; font-size:0.8rem;">Total: ${total}</span>
+                        </div>
+                `;
+                
+                if (houseStudents.length === 0) {
+                    html += '<div style="padding:15px; text-align:center; color:#999;">No students yet</div>';
+                } else {
+                    houseStudents.forEach((s, idx) => {
+                        html += `
+                            <div class="leaderboard-row">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div class="rank-num">${idx + 1}</div>
+                                    <div>
+                                        <div style="font-weight:600;">${s.name}</div>
+                                        <div style="font-size:0.75rem; opacity:0.8;">${s.year}</div>
+                                    </div>
+                                </div>
+                                <div style="font-weight:700; color:${HOUSE_COLORS[houseName]}">${s.points}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                html += '</div>';
+                container.innerHTML += html;
+            });
+            
+            // User rank
+            const sorted = students.sort((a,b) => b.points - a.points);
+            const rank = sorted.findIndex(s => s.id === currentUser.id) + 1;
+            document.getElementById('user-rank-display').innerText = rank > 0 ? `#${rank}` : '--';
+            
+            // Progress bar
+            const maxPoints = sorted[0]?.points || 100;
+            const progressPercent = Math.min((currentUser.points / maxPoints) * 100, 100);
+            document.getElementById('progress-fill-bar').style.width = progressPercent + '%';
+            
+            console.log(`Loaded ${students.length} students across houses`);
+        }
+        
+        function renderBadges() {
+            const badges = currentUser.progress.badges || [];
+            const container = document.getElementById('badges-container');
+            
+            if (badges.length === 0) {
+                container.innerHTML = '<p style="color:#999; font-size:0.85rem;">Complete lessons and quizzes to earn badges!</p>';
+            } else {
+                container.innerHTML = badges.map(b => `<div class="badge-item">${b}</div>`).join('');
+            }
+        }
+        
+        function renderSports() {
+            const container = document.getElementById('sports-container');
+            container.innerHTML = SPORTS_LIST.map(sport => `
+                <div class="sport-tile" onclick="openLessons('${sport}')">
+                    <i class="material-icons-round sport-icon">${SPORT_ICONS[sport] || 'sports'}</i>
+                    <span class="sport-name">${sport}</span>
+                </div>
+            `).join('');
+        }
+        
+        async function openLessons(sport) {
+            currentSport = sport;
+            document.getElementById('current-sport-title').innerText = sport;
+            
+            ensureUserStructure(currentUser);
+            if (!currentUser.progress.sports[sport]) {
+                currentUser.progress.sports[sport] = {};
+            }
+            
+            const container = document.getElementById('lesson-list-container');
+            let html = '';
+            
+            // Regular lessons
+            for (let i = 1; i <= 10; i++) {
+                const isFormal = [1, 5, 9, 10].includes(i);
+                const saved = currentUser.progress.sports[sport][i] || {};
+                const completed = saved.completed || false;
+                
+                let title, subtitle;
+                if (isFormal) {
+                    if (i === 1) title = 'Diagnostic Assessment';
+                    else if (i === 5) title = 'Mid-term Assessment';
+                    else title = 'Final Assessment';
+                    subtitle = '5 Skills Matrix';
+                } else {
+                    title = saved.topic || `Practice Session ${i}`;
+                    subtitle = 'Skill Development';
+                }
+                
+                const classNames = `lesson-item ${isFormal ? 'formal' : 'practice'} ${completed ? 'completed' : ''}`;
+                const icon = isFormal ? 'assignment' : 'fitness_center';
+                
+                html += `
+                    <div class="${classNames}" onclick="openAssessment(${i}, ${isFormal})">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div style="background:${isFormal ? 'rgba(255,215,0,0.2)' : 'rgba(67,97,238,0.1)'}; padding:12px; border-radius:10px; font-weight:700; color:${isFormal ? 'var(--formal-gold)' : 'var(--primary)'};">${i}</div>
+                            <div>
+                                <div style="font-weight:600; font-size:0.95rem;">${title}</div>
+                                <div style="font-size:0.75rem; opacity:0.7;">${subtitle}</div>
+                            </div>
+                        </div>
+                        <i class="material-icons-round">${icon}</i>
+                    </div>
+                `;
+            }
+            
+            // Special tiles
+            html += `
+                <div class="special-tile" onclick="viewSkillsSummary()">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <div>
+                            <div style="font-weight:700; font-size:1.1rem;">📊 My Skills Progress</div>
+                            <div style="font-size:0.8rem; opacity:0.9; margin-top:5px;">View your assessment history</div>
+                        </div>
+                        <i class="material-icons-round" style="font-size:2rem;">trending_up</i>
+                    </div>
+                </div>
+                <div class="special-tile" onclick="openSportHistory()">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <div>
+                            <div style="font-weight:700; font-size:1.1rem;">📚 Sport History</div>
+                            <div style="font-size:0.8rem; opacity:0.9; margin-top:5px;">Learn & take quiz</div>
+                        </div>
+                        <i class="material-icons-round" style="font-size:2rem;">history_edu</i>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            navTo('lessons');
+        }
+        
+        async function openAssessment(lessonNum, isFormal) {
+            currentLesson = lessonNum;
+            document.getElementById('assess-title').innerText = `Lesson ${lessonNum}`;
+            
+            const saved = currentUser.progress.sports[currentSport]?.[lessonNum] || {};
+            
+            if (isFormal) {
+                document.getElementById('practice-inputs').classList.add('hidden');
+                document.getElementById('formal-matrix').classList.remove('hidden');
+                await renderFormalMatrix(saved);
+            } else {
+                document.getElementById('formal-matrix').classList.add('hidden');
+                document.getElementById('practice-inputs').classList.remove('hidden');
+                
+                // Load saved data
+                document.getElementById('practice-topic').value = saved.topic || '';
+                document.getElementById('practice-skill').value = saved.skill || '';
+                document.getElementById('criteria-1').value = saved.criteria?.[0] || '';
+                document.getElementById('criteria-2').value = saved.criteria?.[1] || '';
+                document.getElementById('criteria-3').value = saved.criteria?.[2] || '';
+                
+                // Reset level selections
+                document.querySelectorAll('#warmup-selector .level-btn, #referee-selector .level-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                if (saved.warmup) {
+                    const warmupBtn = document.querySelector(`#warmup-selector .level-btn:nth-child(${saved.warmup})`);
+                    if (warmupBtn) warmupBtn.classList.add('active');
+                }
+                if (saved.referee) {
+                    const refereeBtn = document.querySelector(`#referee-selector .level-btn:nth-child(${saved.referee})`);
+                    if (refereeBtn) refereeBtn.classList.add('active');
+                }
+                
+                practiceData = { warmup: saved.warmup || 0, referee: saved.referee || 0 };
+            }
+            
+            navTo('assessment');
+        }
+        
+        function selectSingleLevel(btn, type, level) {
+            const parent = btn.parentNode;
+            parent.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            practiceData[type] = level;
+        }
+        
+        async function savePracticeLesson() {
+            const topic = document.getElementById('practice-topic').value.trim();
+            const skill = document.getElementById('practice-skill').value.trim();
+            const criteria = [
+                document.getElementById('criteria-1').value.trim(),
+                document.getElementById('criteria-2').value.trim(),
+                document.getElementById('criteria-3').value.trim()
+            ];
+            
+            if (!topic || !skill || !practiceData.warmup || !practiceData.referee) {
+                alert('Please complete all fields and select warm-up and referee levels');
+                return;
+            }
+            
+            if (!currentUser.progress.sports[currentSport]) {
+                currentUser.progress.sports[currentSport] = {};
+            }
+            
+            currentUser.progress.sports[currentSport][currentLesson] = {
+                topic, skill, criteria,
+                warmup: practiceData.warmup,
+                referee: practiceData.referee,
+                completed: true,
+                date: new Date().toISOString()
+            };
+            
+            // Award points (1 point per practice session)
+            currentUser.points += 1;
+            
+            await saveUserData(currentUser);
+            alert('Practice session saved! +1 House Point');
+            openLessons(currentSport);
+        }
+        
+        async function renderFormalMatrix(savedData) {
+            const skills = await getSkillDefinition(currentUser.ks, currentSport);
+            const container = document.getElementById('matrix-container');
+            
+            // Show previous assessment if exists
+            if (savedData.skills && savedData.skills.length > 0) {
+                document.getElementById('previous-assessment-view').classList.remove('hidden');
+                let prevHTML = '';
+                savedData.skills.forEach((level, idx) => {
+                    const skill = skills[idx];
+                    prevHTML += `<div style="margin-bottom:8px;"><strong>${skill.name}:</strong> Level ${level}</div>`;
+                });
+                document.getElementById('previous-assessment-content').innerHTML = prevHTML;
+            } else {
+                document.getElementById('previous-assessment-view').classList.add('hidden');
+            }
+            
+            // Render skill matrix
+            container.innerHTML = skills.map((skill, idx) => {
+                const savedLevel = savedData.skills?.[idx] || 0;
+                return `
+                    <div class="skill-row">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div>
+                                <strong style="color:var(--primary); font-size:0.95rem;">${skill.category}: ${skill.name}</strong>
+                            </div>
+                        </div>
+                        <div class="skill-levels" data-skill-idx="${idx}">
+                            ${skill.levels.map((desc, levelIdx) => `
+                                <div class="level-btn ${savedLevel === levelIdx + 1 ? 'active' : ''}" 
+                                     onclick="selectSkillLevel(${idx}, ${levelIdx + 1}, this)"
+                                     title="${desc}">
+                                    ${levelIdx + 1}<br><small>${['Novice','Explorer','Performer','Champion'][levelIdx]}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        const formalSkillSelections = [];
+        function selectSkillLevel(skillIdx, level, btn) {
+            const parent = btn.parentNode;
+            parent.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            formalSkillSelections[skillIdx] = level;
+        }
+        
+        async function saveFormalAssessment() {
+            const skills = await getSkillDefinition(currentUser.ks, currentSport);
+            
+            // Validate all skills selected
+            if (formalSkillSelections.filter(x => x).length !== skills.length) {
+                alert('Please assess all 5 skills before submitting');
+                return;
+            }
+            
+            if (!currentUser.progress.sports[currentSport]) {
+                currentUser.progress.sports[currentSport] = {};
+            }
+            
+            // Calculate points (1-4 per skill)
+            const totalPoints = formalSkillSelections.reduce((sum, level) => sum + (level || 0), 0);
+            
+            // Only lesson 10 counts towards main points
+            let pointsEarned = 0;
+            if (currentLesson === 10) {
+                pointsEarned = totalPoints;
+                currentUser.points += pointsEarned;
+            }
+            
+            currentUser.progress.sports[currentSport][currentLesson] = {
+                skills: [...formalSkillSelections],
+                totalPoints,
+                completed: true,
+                date: new Date().toISOString()
+            };
+            
+            // Award badge for completing all formal assessments
+            if (currentLesson === 10) {
+                const badge = `🏆 ${currentSport} Master`;
+                if (!currentUser.progress.badges.includes(badge)) {
+                    currentUser.progress.badges.push(badge);
+                }
+            }
+            
+            await saveUserData(currentUser);
+            formalSkillSelections.length = 0;
+            
+            const msg = currentLesson === 10 
+                ? `Assessment complete! +${pointsEarned} House Points earned!`
+                : 'Assessment saved! (Lesson 10 final assessment counts towards points)';
+            alert(msg);
+            
+            openLessons(currentSport);
+        }
+        
+        function viewSkillsSummary() {
+            alert('Skills summary feature coming soon!');
+        }
+        
+        function openSportHistory() {
+            alert('Sport History quiz coming soon!');
+        }
+        
+        // === QUIZ MODULE ===
+        async function renderQuizMap() {
+            const completed = currentUser.progress.completedQuizzes || [];
+            document.getElementById('quiz-points-display').innerText = currentUser.quizXP;
+            document.getElementById('quiz-completed-display').innerText = `${completed.length}/100`;
+            
+            // Render quiz leaderboard
+            const allUsers = await getAllUsers();
+            const students = allUsers.filter(u => u.role === 'student').sort((a,b) => b.quizXP - a.quizXP).slice(0, 10);
+            document.getElementById('quiz-leaderboard-list').innerHTML = students.map((s, i) => `
+                <div class="leaderboard-row" style="font-size:0.85rem;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <b style="color:var(--primary);">${i + 1}.</b> 
+                        <span>${s.name}</span>
+                    </div>
+                    <b style="color:var(--house-green);">${s.quizXP} XP</b>
+                </div>
+            `).join('');
+            
+            // Render 100-level map
+            const container = document.getElementById('quiz-map-container');
+            container.innerHTML = Array.from({ length: 100 }, (_, i) => {
+                const level = i + 1;
+                const isCompleted = completed.includes(level);
+                const isUnlocked = level === 1 || completed.includes(level - 1);
+                const statusClass = isCompleted ? 'completed' : (isUnlocked ? '' : 'locked');
+                
+                return `<div class="map-node ${statusClass}" onclick="startQuiz(${level})">${level}</div>`;
+            }).join('');
+        }
+        
+        function toggleStudy() {
+            document.getElementById('study-material').classList.toggle('hidden');
+        }
+        
+        async function startQuiz(level) {
+            const completed = currentUser.progress.completedQuizzes || [];
+            if (level > 1 && !completed.includes(level - 1)) {
+                alert('Complete the previous quiz first!');
+                return;
+            }
+            
+            const content = generateQuizContent(level);
+            quizState = {
+                active: true,
+                level,
+                score: 0,
+                questionIndex: 0,
+                questions: content.questions,
+                answered: false
+            };
+            
+            document.getElementById('q-topic').innerText = content.topic;
+            document.getElementById('study-material').innerHTML = content.studyText;
+            document.getElementById('study-material').classList.add('hidden');
+            document.getElementById('q-feedback').classList.add('hidden');
+            
+            navTo('quiz-runner');
+            loadQuestionUI();
+        }
+        
+        function generateQuizContent(level) {
+            const categoryIdx = (level - 1) % 10;
+            const difficulty = Math.floor((level - 1) / 10) + 1;
+            const topic = QUIZ_CATEGORIES[categoryIdx];
+            
+            return {
+                topic: `${topic} (Level ${level})`,
+                studyText: `<h4>${topic}</h4><p>This quiz tests your understanding of ${topic.toLowerCase()}. Level ${level} difficulty focuses on ${difficulty === 1 ? 'basic concepts' : difficulty === 2 ? 'intermediate understanding' : 'advanced application'}. Pay attention to the key principles and always consider the context of physical education and health.</p>`,
+                questions: generateQuestions(topic, difficulty)
+            };
+        }
+        
+        function generateQuestions(topic, difficulty) {
+            const questions = [];
+            const baseQuotes = [
+                "The only way to do great work is to love what you do. - Steve Jobs",
+                "Success is not final, failure is not fatal. - Winston Churchill",
+                "Excellence is not a skill, it's an attitude. - Ralph Marston"
+            ];
+            
+            for (let i = 0; i < 10; i++) {
+                questions.push({
+                    q: `Question ${i + 1} about ${topic} (Difficulty ${difficulty})`,
+                    quote: baseQuotes[i % 3],
+                    options: [
+                        { text: 'Correct Answer', correct: true, feedback: 'Excellent! This is the right answer.' },
+                        { text: 'Wrong Answer A', correct: false, feedback: 'Incorrect. Review the study material.' },
+                        { text: 'Wrong Answer B', correct: false, feedback: 'Not quite. Think about the key concepts.' },
+                        { text: 'Wrong Answer C', correct: false, feedback: 'This is not correct. Try again.' }
+                    ].sort(() => Math.random() - 0.5)
+                });
+            }
+            
+            return questions;
+        }
+        
+        function loadQuestionUI() {
+            quizState.answered = false;
+            const q = quizState.questions[quizState.questionIndex];
+            
+            document.getElementById('q-number').innerText = quizState.questionIndex + 1;
+            document.getElementById('q-score').innerText = quizState.score;
+            document.getElementById('q-text').innerText = q.q;
+            document.getElementById('q-quote').innerText = `"${q.quote}"`;
+            document.getElementById('q-feedback').classList.add('hidden');
+            
+            const optionsContainer = document.getElementById('q-options');
+            optionsContainer.innerHTML = q.options.map((opt, idx) => `
+                <button class="btn btn-outline" onclick="answerQuestion(${idx})" style="text-align:left;">
+                    ${opt.text}
+                </button>
+            `).join('');
+        }
+        
+        function answerQuestion(optIdx) {
+            if (quizState.answered) return;
+            quizState.answered = true;
+            
+            const q = quizState.questions[quizState.questionIndex];
+            const selected = q.options[optIdx];
+            const isCorrect = selected.correct;
+            
+            if (isCorrect) quizState.score++;
+            
+            // Disable all buttons
+            document.querySelectorAll('#q-options button').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
+            
+            // Show feedback
+            const feedback = document.getElementById('q-feedback');
+            feedback.classList.remove('hidden');
+            feedback.style.background = isCorrect ? '#e8f5e9' : '#ffebee';
+            document.getElementById('feedback-text').innerHTML = `
+                <div style="font-weight:700; color:${isCorrect ? 'var(--house-green)' : '#f44336'}; margin-bottom:8px;">
+                    ${isCorrect ? '✓ Correct!' : '✗ Incorrect'}
+                </div>
+                <p style="margin:0; font-size:0.9rem;">${selected.feedback}</p>
+            `;
+        }
+        
+        async function nextQuestion() {
+            quizState.questionIndex++;
+            
+            if (quizState.questionIndex < 10) {
+                loadQuestionUI();
+            } else {
+                // Quiz complete
+                const passed = quizState.score >= 8;
+                let message = `Quiz Complete!\n\nScore: ${quizState.score}/10\n\n`;
+                
+                if (passed) {
+                    const alreadyCompleted = currentUser.progress.completedQuizzes.includes(quizState.level);
+                    
+                    if (!alreadyCompleted) {
+                        currentUser.progress.completedQuizzes.push(quizState.level);
+                        currentUser.quizXP += 10;
+                        message += '✓ Quiz passed! +10 Quiz XP\n';
+                        
+                        // Check for House Point award (every 5 quizzes)
+                        const quizzesCompleted = currentUser.progress.completedQuizzes.length;
+                        if (quizzesCompleted % 5 === 0) {
+                            currentUser.points += 1;
+                            message += '\n🎉 Milestone! +1 House Point!';
+                        }
+                        
+                        await saveUserData(currentUser);
+                    } else {
+                        message += '(Already completed)';
+                    }
+                } else {
+                    message += '✗ Need 8/10 to pass. Try again!';
+                }
+                
+                alert(message);
+                navTo('quiz');
+                await renderQuizMap();
+                await renderLeaderboard();
+            }
+        }
+        
+        function exitQuiz() {
+            if (confirm('Exit quiz? Progress will be lost.')) {
+                navTo('quiz');
+            }
+        }
+        
+        // === NAVIGATION ===
+        function navTo(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if (viewName === 'dashboard') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+            if (viewName === 'sports' || viewName === 'lessons') document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+            if (viewName === 'quiz' || viewName === 'quiz-runner') document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+        }
+        
+        // === TEACHER APP ===
+        async function loadTeacherApp() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('teacher-app').classList.remove('hidden');
+            
+            // Populate sports dropdown
+            const sportSelect = document.getElementById('skill-sport');
+            sportSelect.innerHTML = SPORTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('');
+            
+            await filterTeacherList();
+            await loadSkillEditor();
+        }
+        
+        function switchTeacherTab(tab) {
+            document.querySelectorAll('.teacher-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`teacher-${tab}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.teacher-tab').forEach(el => {
+                el.style.borderBottomColor = 'transparent';
+                el.style.color = '#888';
+            });
+            document.getElementById(`tab-${tab}`).style.borderBottomColor = 'var(--primary)';
+            document.getElementById(`tab-${tab}`).style.color = 'var(--text-light)';
+        }
+        
+        async function filterTeacherList() {
+            const year = document.getElementById('t-filter-year').value;
+            const house = document.getElementById('t-filter-house').value;
+            const gender = document.getElementById('t-filter-gender').value;
+            const search = document.getElementById('t-search').value.toLowerCase();
+            
+            const allUsers = await getAllUsers();
+            let students = allUsers.filter(u => u.role === 'student');
+            
+            if (year !== 'all') students = students.filter(s => s.year === year || s.year.startsWith(year));
+            if (house !== 'all') students = students.filter(s => s.house === house);
+            if (gender !== 'all') students = students.filter(s => s.gender === gender);
+            if (search) students = students.filter(s => s.name.toLowerCase().includes(search) || s.id.toLowerCase().includes(search));
+            
+            const tbody = document.getElementById('teacher-student-list');
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999;">No students found</td></tr>';
+            } else {
+                tbody.innerHTML = students.map(s => `
+                    <tr>
+                        <td><strong>${s.name}</strong></td>
+                        <td>${s.id}</td>
+                        <td>${s.year}</td>
+                        <td><span style="color:${HOUSE_COLORS[s.house]}; font-weight:600;">${s.house}</span></td>
+                        <td><span class="score-badge">${s.points} pts</span></td>
+                        <td><button class="btn-danger" onclick="viewStudentDetail('${s.id}')">View</button></td>
+                    </tr>
+                `).join('');
+            }
+        }
+        
+        async function viewStudentDetail(id) {
+            const user = await getUserData(id);
+            if (!user) return;
+            
+            let detail = `Student: ${user.name}\n`;
+            detail += `ID: ${user.id}\n`;
+            detail += `House: ${user.house}\n`;
+            detail += `Points: ${user.points}\n`;
+            detail += `Quiz XP: ${user.quizXP}\n\n`;
+            detail += `Sports Progress:\n`;
+            
+            for (let sport in user.progress.sports) {
+                detail += `\n${sport}:\n`;
+                for (let lesson in user.progress.sports[sport]) {
+                    const data = user.progress.sports[sport][lesson];
+                    detail += `  Lesson ${lesson}: ${data.completed ? 'Completed' : 'In Progress'}\n`;
+                }
+            }
+            
+            alert(detail);
+        }
+        
+        async function loadSkillEditor() {
+            const ks = document.getElementById('skill-ks').value;
+            const sport = document.getElementById('skill-sport').value;
+            
+            const skills = await getSkillDefinition(ks, sport);
+            const container = document.getElementById('skill-editor-content');
+            
+            container.innerHTML = `
+                <h4 style="margin-top:20px; color:var(--primary);">Define 5 Skills for ${ks} - ${sport}</h4>
+                <p style="font-size:0.85rem; color:#666; margin-bottom:20px;">3 Motor + 1 Methodological + 1 Social</p>
+                
+                ${skills.map((skill, idx) => `
+                    <div class="stats-card" style="margin-bottom:20px;">
+                        <h5 style="color:var(--primary); margin-top:0;">Skill ${idx + 1}: ${skill.category}</h5>
+                        <div class="form-group">
+                            <label>Skill Name</label>
+                            <input type="text" class="form-control" id="skill-name-${idx}" value="${skill.name}">
+                        </div>
+                        ${skill.levels.map((level, levelIdx) => `
+                            <div class="form-group">
+                                <label>Level ${levelIdx + 1} (${['Novice','Explorer','Performer','Champion'][levelIdx]})</label>
+                                <input type="text" class="form-control" id="skill-${idx}-level-${levelIdx}" value="${level}">
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('')}
+                
+                <button class="btn btn-primary" onclick="saveSkillDefinitions()">Save All Skills</button>
+            `;
+        }
+        
+        async function saveSkillDefinitions() {
+            const ks = document.getElementById('skill-ks').value;
+            const sport = document.getElementById('skill-sport').value;
+            
+            const skills = [];
+            const categories = ['Motor', 'Motor', 'Motor', 'Method', 'Social'];
+            
+            for (let i = 0; i < 5; i++) {
+                const name = document.getElementById(`skill-name-${i}`).value;
+                const levels = [];
+                for (let j = 0; j < 4; j++) {
+                    levels.push(document.getElementById(`skill-${i}-level-${j}`).value);
+                }
+                skills.push({
+                    id: i + 1,
+                    category: categories[i],
+                    name,
+                    levels
+                });
+            }
+            
+            const saved = await saveSkillDefinition(ks, sport, skills);
+            if (saved) {
+                alert('Skills saved successfully!');
+            } else {
+                alert('Error saving skills. Please try again.');
+            }
+        }
+        
+        // === UTILITIES ===
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+        
+        // === INIT ===
+        async function initTestClasses() {
+            // Check if test classes already exist
+            const existing = await getUserData('TEST-6-001');
+            if (existing) return; // Already initialized
+            
+            // Year 6 Test Class (20 students)
+            const year6Names = [
+                'Emma Thompson', 'Oliver Wilson', 'Sophia Davis', 'Noah Brown', 'Ava Martinez',
+                'Liam Anderson', 'Isabella Taylor', 'Mason Thomas', 'Mia Jackson', 'James White',
+                'Charlotte Harris', 'Benjamin Clark', 'Amelia Lewis', 'Lucas Robinson', 'Harper Walker',
+                'Henry Hall', 'Evelyn Allen', 'Alexander Young', 'Abigail King', 'Michael Wright'
+            ];
+            const houses = ['Red', 'Blue', 'Green', 'Yellow'];
+            
+            for (let i = 0; i < 20; i++) {
+                const points = Math.floor(Math.random() * 55) + 1;
+                const student = {
+                    role: 'student',
+                    id: `TEST-6-${String(i + 1).padStart(3, '0')}`,
+                    name: year6Names[i],
+                    email: `test6.${i + 1}@school.edu`,
+                    password: 'test123',
+                    year: '6-Test',
+                    ks: 'KS2+',
+                    house: houses[i % 4],
+                    dob: '2013-06-15',
+                    profilePic: '',
+                    points: points,
+                    quizXP: Math.floor(points * 10),
+                    gender: i % 2 === 0 ? 'male' : 'female',
+                    progress: {
+                        sports: {},
+                        completedQuizzes: Array.from({length: Math.floor(points / 5)}, (_, j) => j + 1),
+                        badges: []
+                    }
+                };
+                await saveUserData(student);
+            }
+            
+            // Year 10 Test Class (20 students)
+            const year10Names = [
+                'Jack Morrison', 'Emily Parker', 'Daniel Cooper', 'Grace Mitchell', 'Ryan Bennett',
+                'Sophie Turner', 'Matthew Carter', 'Olivia Phillips', 'Joshua Evans', 'Lily Edwards',
+                'Samuel Collins', 'Chloe Stewart', 'Andrew Morris', 'Hannah Rogers', 'Christopher Reed',
+                'Ella Cook', 'David Morgan', 'Zoe Bell', 'Joseph Murphy', 'Madison Bailey'
+            ];
+            
+            for (let i = 0; i < 20; i++) {
+                const points = Math.floor(Math.random() * 55) + 1;
+                const student = {
+                    role: 'student',
+                    id: `TEST-10-${String(i + 1).padStart(3, '0')}`,
+                    name: year10Names[i],
+                    email: `test10.${i + 1}@school.edu`,
+                    password: 'test123',
+                    year: '10-Test',
+                    ks: 'KS4',
+                    house: houses[i % 4],
+                    dob: '2009-09-10',
+                    profilePic: '',
+                    points: points,
+                    quizXP: Math.floor(points * 10),
+                    gender: i % 2 === 0 ? 'male' : 'female',
+                    progress: {
+                        sports: {},
+                        completedQuizzes: Array.from({length: Math.floor(points / 5)}, (_, j) => j + 1),
+                        badges: []
+                    }
+                };
+                await saveUserData(student);
+            }
+            
+            console.log('Test classes initialized: 40 students added');
+        }
+        
+        window.onload = async function() {
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Initialize test classes
+            await initTestClasses();
+            
+            console.log('PE Hub loaded successfully!');
+        };
+    </script>
+</body>
+</html>
